@@ -1,5 +1,6 @@
 # Deploying a test app to kubernetes
 This README compiles instructions from this tutorial.
+
 https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-app
 
 All commands were run in the directory of the cloned repo.
@@ -7,21 +8,22 @@ All commands were run in the directory of the cloned repo.
 Follow the steps at https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-app
 
 ## Step 2: Create an ACR
-az acr create --resource-group shilpahackday --subscription "Social Dev" --name shilpahackdayacr
+### az acr create --resource-group shilpahackday --subscription "Social Dev" --name shilpahackdayacr
 
-Login to ACR (needed to use the ACR)
+### Login to ACR (needed to use the ACR)
 az acr login --name shilpahackdayacr --subscription "Social Dev"
 
-To get the ACR login server address:
+### To get the ACR login server address:
 az acr list --resource-group shilpahackday --subscription "Social Dev" --query "[].{acrLoginServer:loginServer}" --output table
 
-Tag your image:
+### Tag your image:
 docker tag azure-vote-front shilpahackdayacr.azurecr.io/azure-vote-front:v1
 
-Push image to registry:
+### Push image to registry:
 docker push shilpahackdayacr.azurecr.io/azure-vote-front:v1
 The push refers to repository [shilpahackdayacr.azurecr.io/azure-vote-front] with a label of v1
 
+### Notes:
 Verify: List image in the registry:
 az acr repository list --name shilpahackdayacr --subscription "Social Dev" --output table
 
@@ -29,11 +31,14 @@ Verify: Tag for image in the registry looks ok:
 az acr repository show-tags --name shilpahackdayacr --subscription "Social Dev" --repository azure-vote-front --output table
 
 ## Step 3: Create a cluster
+az aks create --resource-group myResourceGroup --name myAKSCluster --node-count 2 --generate-ssh-keys --attach-acr <myacrName>
+Got error below:
 Directory permission is needed for the current user to register the application. For how to configure, please refer 'https://docs.microsoft.com/azure/azure-resource-manager/resource-group-create-service-principal-portal'. Original error: Insufficient privileges to complete the operation.
 Creting AD permissions painful, and creating a service principal is not something Ops gives us access to.
 
+Use an existing cluster
 az login
-az account set --subscription "73fe0a3d-8118-4e61-95a6-5588f241d42b"
+az account set --subscription "xxxxx"
 kubectl get pods
 (showed default k8s pods)
 kubectl get all
@@ -97,8 +102,16 @@ PS C:\docs\Hackday\Kubernetes\azure-voting-app-redis> kubectl describe secret/re
 
 #### Step 4: Point to the kubernetes secret in yaml
 Update deployment .yaml file:
-imagePullSecrets:
-         - name: regcred
+apiVersion: v1
+kind: Pod
+metadata:
+  name: private-reg
+spec:
+  containers:
+  - name: private-reg-container
+    image: shilpaacr.azurecr.io/azure-vote-front:v1
+  imagePullSecrets:
+  - name: regcred
 		 
 PS C:\docs\Hackday\Kubernetes\azure-voting-app-redis> kubectl apply -f azure-vote-all-in-one-redis.yaml
 
