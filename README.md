@@ -8,7 +8,8 @@ All commands were run in the directory of the cloned repo.
 Follow the steps at https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-app
 
 ## Step 2: Create an ACR
-### az acr create --resource-group shilpahackday --subscription "Social Dev" --name shilpahackdayacr
+### Create new ACR
+az acr create --resource-group shilpahackday --subscription "Social Dev" --name shilpahackdayacr
 
 ### Login to ACR (needed to use the ACR)
 az acr login --name shilpahackdayacr --subscription "Social Dev"
