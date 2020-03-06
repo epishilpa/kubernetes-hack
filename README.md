@@ -33,25 +33,36 @@ az acr repository show-tags --name shilpahackdayacr --subscription "Social Dev" 
 
 ## Step 3: Create a cluster
 az aks create --resource-group myResourceGroup --name myAKSCluster --node-count 2 --generate-ssh-keys --attach-acr <myacrName>
+
 Got error below:
 Directory permission is needed for the current user to register the application. For how to configure, please refer 'https://docs.microsoft.com/azure/azure-resource-manager/resource-group-create-service-principal-portal'. Original error: Insufficient privileges to complete the operation.
 Creting AD permissions painful, and creating a service principal is not something Ops gives us access to.
 
 Use an existing cluster
+
 az login
+
 az account set --subscription "xxxxx"
+
 kubectl get pods
 (showed default k8s pods)
+
 kubectl get all
+
 kubectl get all -A
+
 kubectl get namespaces
+
 kubectl config set-context --current --namespace=shilpa
+
 kubectl get pods
 (now no pods as in shilpa nmpsc)
 
 ## Step 4: Deploy to kubernetes
 Change .yaml file to point to your ACR server and then deploy using
+
 kubectl apply -f azure-vote-all-in-one-redis.yaml
+
 
 kubectl get pods
 NAME                                READY   STATUS             RESTARTS   AGE
@@ -81,7 +92,9 @@ Pull an Image from a Private Registrykubernetes.io
 https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/"
 
 ### How to deploy an app to Kubernetes to pull an image from a private registry
+
 #### Step 1: Authenticate with the ACR to create a auth token that gets added to the .docker/config.json file
+
 C:\WINDOWS\system32>docker login shilpaacr.azurecr.io
 Username: shilpaacr
 Password:
@@ -93,16 +106,21 @@ In GitBash, go to default location: C:\Users\shjo
 $cat ~/.docker/config.json
 
 #### Step 3: Create a secret in kubernetes
+
 We need to import the credential for shilpaacr.azurecr.io ACR as a secret into kubernetes and reference the in the yaml (to get around the Failed to pull image "shilpaacr.azurecr.io/azure-vote-front:v1" error).
+
 Create secret
 PS C:\docs\Hackday\Kubernetes\azure-voting-app-redis> kubectl create secret docker-registry regcred --docker-server=shilpaacr.azurecr.io --docker-username=shilpaacr --docker-password=<getyourpwdfromazureportal>
 
 Get secrets
+
 PS C:\docs\Hackday\Kubernetes\azure-voting-app-redis> kubectl get secrets
+
 PS C:\docs\Hackday\Kubernetes\azure-voting-app-redis> kubectl describe secret/regcred
 
 #### Step 4: Point to the kubernetes secret in yaml
 Update deployment .yaml file:
+
 apiVersion: v1
 kind: Pod
 metadata:
