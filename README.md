@@ -22,13 +22,16 @@ docker tag azure-vote-front shilpahackdayacr.azurecr.io/azure-vote-front:v1
 
 ### Push image to registry:
 docker push shilpahackdayacr.azurecr.io/azure-vote-front:v1
+
 The push refers to repository [shilpahackdayacr.azurecr.io/azure-vote-front] with a label of v1
 
 ### Notes:
 Verify: List image in the registry:
+
 az acr repository list --name shilpahackdayacr --subscription "Social Dev" --output table
 
 Verify: Tag for image in the registry looks ok:
+
 az acr repository show-tags --name shilpahackdayacr --subscription "Social Dev" --repository azure-vote-front --output table
 
 ## Step 3: Create a cluster
@@ -65,12 +68,14 @@ kubectl apply -f azure-vote-all-in-one-redis.yaml
 
 
 kubectl get pods
+
 NAME                                READY   STATUS             RESTARTS   AGE
 azure-vote-back-6d4b4776b6-lbvqp    1/1     Running            0          52m
 azure-vote-front-6c8445ff95-98gjl   0/1     ImagePullBackOff   0          12m
 
 
 kubectl describe pod azure-vote-front-7cb9bfc4b9-pk287
+
 Events:
   Type     Reason     Age                   From                               Message
   ----     ------     ----                  ----                               -------
